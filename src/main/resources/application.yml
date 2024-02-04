@@ -1,0 +1,10 @@
+game:
+  playerCount: 2
+  boardSize: 10
+  snakeCount: 6
+  ladderCount: 5
+  diceCount: 2
+  movementStrategy: SUM
+  mineCount: 3
+  crocodileCount: 4
+
