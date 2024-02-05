@@ -4,6 +4,8 @@ import com.phonePe.snakeAndLadders.config.GameProperties;
 import com.phonePe.snakeAndLadders.constants.Actionable;
 import com.phonePe.snakeAndLadders.constants.NonActionables;
 import com.phonePe.snakeAndLadders.structs.Board;
+import com.phonePe.snakeAndLadders.structs.Cell;
+import com.phonePe.snakeAndLadders.structs.Player;
 import com.phonePe.snakeAndLadders.structs.Snake;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -35,9 +37,16 @@ public class SnakeService implements ISpecialObjectsInterface {
         for (int i = 0; i < gameProperties.getSnakeCount(); i++) {
             int tail = generateRandomPosition(lowerLimitForTail, upperLimitForTail, random);
             int head = generateRandomHeadPosition(tail, board, upperLimitForHead, random, snakeHead);
+            if (board.getCells()[tail] == null) {
+                board.getCells()[tail] = new Cell();
+            }
+            board.getCells()[tail].getNonActionables().add(NonActionables.SNAKE_TAIL);
 
-            board.getCells().get(tail).getNonActionables().add(NonActionables.SNAKE_TAIL);
-            board.getCells().get(head).setActionable(Actionable.SNAKE_HEAD);
+
+            if (board.getCells()[head] == null) {
+                board.getCells()[head] = new Cell();
+            }
+            board.getCells()[head].setActionable(Actionable.SNAKE_HEAD);
 
             snakes.add(new Snake(head, tail));
             snakeHead.add(head);
@@ -53,13 +62,25 @@ public class SnakeService implements ISpecialObjectsInterface {
         int head;
         do {
             head = generateRandomPosition(lowerLimitForHead, upperLimitForHead, random);
-        } while (snakeHead.contains(head) && Objects.nonNull(board.getCells().get(head).getActionable()));
+        } while (snakeHead.contains(head) && Objects.nonNull(board.getCells()[head].getActionable()));
         return head;
     }
 
 
     @Override
-    public int getFinalPosition(int position) {
-        return 0;
+    public int getFinalPosition(Board board, int position, Player player) {
+        Snake snake = getSnake(board.getSnakes(), position);
+        if (Objects.nonNull(snake)) {
+            return snake.getTail();
+        }
+        return position;
     }
+
+    private Snake getSnake(List<Snake> snakes, int headPosition) {
+        return snakes.stream()
+                .filter(s -> s.getHead() == headPosition)
+                .findFirst()
+                .orElse(null);
+    }
+
 }

@@ -3,8 +3,7 @@ package com.phonePe.snakeAndLadders.service.specialObject;
 import com.phonePe.snakeAndLadders.config.GameProperties;
 import com.phonePe.snakeAndLadders.constants.Actionable;
 import com.phonePe.snakeAndLadders.constants.NonActionables;
-import com.phonePe.snakeAndLadders.structs.Board;
-import com.phonePe.snakeAndLadders.structs.Ladder;
+import com.phonePe.snakeAndLadders.structs.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -37,17 +36,42 @@ public class LadderService implements ISpecialObjectsInterface {
     }
 
     @Override
-    public int getFinalPosition(int position) {
-        return 0;
+    public int getFinalPosition(Board board, int position, Player player) {
+        Ladder ladder = getLadder(board.getLadders(), position);
+
+        if (Objects.nonNull(ladder)) {
+            return ladder.getTop();
+        }
+
+        return position;
     }
+
+    private Ladder getLadder(List<Ladder> ladders, int bottomPosition) {
+        return ladders.stream()
+                .filter(l -> l.getBottom() == bottomPosition)
+                .findFirst()
+                .orElse(null);
+    }
+
+
 
     private void setLadderPositions(Board board, List<Ladder> ladders) {
         for (Ladder ladder : ladders) {
-            board.getCells().get(ladder.getTop()).getNonActionables().add(NonActionables.LADDER_TOP);
-            board.getCells().get(ladder.getBottom()).setActionable(Actionable.LADDER_BOTTOM);
+            Cell bottomCell = board.getCells()[ladder.getBottom()];
+            if(Objects.isNull(bottomCell)) {
+                bottomCell = new Cell();
+                bottomCell.setNonActionables(new ArrayList<>());
+            };
+            bottomCell.getNonActionables().add(NonActionables.LADDER_TOP);
+            board.getCells()[ladder.getBottom()] = bottomCell;
+            Cell topCell = board.getCells()[ladder.getTop()];
+            if(Objects.isNull(topCell))
+                topCell = new Cell();
+
+            topCell.setActionable(Actionable.LADDER_BOTTOM);
+            board.getCells()[ladder.getBottom()] = bottomCell;
+            board.getCells()[ladder.getTop()] = topCell;
         }
     }
-
-
 
 }

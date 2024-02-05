@@ -2,11 +2,14 @@ package com.phonePe.snakeAndLadders.service.specialObject;
 
 import com.phonePe.snakeAndLadders.config.GameProperties;
 import com.phonePe.snakeAndLadders.structs.Board;
+import com.phonePe.snakeAndLadders.structs.Cell;
+import com.phonePe.snakeAndLadders.structs.Player;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.phonePe.snakeAndLadders.constants.Actionable;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -26,16 +29,17 @@ public class CrocodileService implements ISpecialObjectsInterface {
             int crocodilePosition;
             do {
                 crocodilePosition = generateRandomPosition(0, upperLimitForCrocodiles, random);
-            } while (crocodilePositions.contains(crocodilePosition) || board.getCells().get(crocodilePosition).hasActionable());
+            } while (crocodilePositions.contains(crocodilePosition) || (Objects.nonNull(board.getCells()[crocodilePosition]) && board.getCells()[crocodilePosition].hasActionable()));
 
-            board.getCells().get(crocodilePosition).setActionable(Actionable.CROCODILE);
+            board.getCells()[crocodilePosition].setActionable(Actionable.CROCODILE);
             crocodilePositions.add(crocodilePosition);
         }
     }
 
-
     @Override
-    public int getFinalPosition(int position) {
-        return 0;
+    public int getFinalPosition(Board board, int position, Player player) {
+        return Math.max(position - 5, 1);
     }
+
+
 }

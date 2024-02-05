@@ -20,6 +20,6 @@ public class Board {
     private List<Snake> snakes;
     private List<Ladder> ladders;
     private Map<Integer, Integer> playerPositions;
-    private List<Cell> cells;
+    private Cell[] cells;
 
 }

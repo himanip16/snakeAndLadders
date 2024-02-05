@@ -15,7 +15,6 @@ public class Cell {
     private int cellNum;
     private Actionable actionable;
     private List<NonActionables> nonActionables= new ArrayList<>();
-    private Player player;
 
     public boolean hasActionable(){
         return Objects.nonNull(actionable);
